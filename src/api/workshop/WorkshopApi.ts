@@ -9,4 +9,5 @@ export interface WorkshopApi {
     create(form: CreateWorkshopForm): Promise<WorkshopDto>;
     edit(id: string, form: EditWorkshopForm): Promise<WorkshopDto>;
     delete(id: string): Promise<void>;
+    get(id: string): Promise<WorkshopDto>;
 }

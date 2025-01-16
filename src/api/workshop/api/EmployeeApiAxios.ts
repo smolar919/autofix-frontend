@@ -1,10 +1,11 @@
-import {EmployeeApi} from "../EmployeeApi.ts";
-import {SearchForm} from "../../../commons/search/SearchForm.ts";
-import {SearchResponse} from "../../../commons/search/SearchResponse.ts";
-import {axiosInstance} from "../../../AxiosClient.ts";
-import {CreateEmployeeForm} from "../form/CreateEmployeeForm.ts";
-import {EditEmployeeForm} from "../form/EditEmployeeForm.ts";
-import {EmployeeDto} from "../response/EmployeeDto.ts";
+import { EmployeeApi } from "../EmployeeApi.ts";
+import { SearchForm } from "../../../commons/search/SearchForm.ts";
+import { SearchResponse } from "../../../commons/search/SearchResponse.ts";
+import { axiosInstance } from "../../../AxiosClient.ts";
+import { AddExistingEmployeeForm } from "../form/AddExistingEmployeeForm.ts";
+import { CreateNewEmployeeForm } from "../form/CreateNewEmployeeForm.ts";
+import { EditEmployeeForm } from "../form/EditEmployeeForm.ts";
+import { EmployeeDto } from "../response/EmployeeDto.ts";
 
 export class EmployeeApiAxios implements EmployeeApi {
     async search(form: SearchForm): Promise<SearchResponse<EmployeeDto>> {
@@ -12,8 +13,13 @@ export class EmployeeApiAxios implements EmployeeApi {
         return response.data;
     }
 
-    async create(form: CreateEmployeeForm): Promise<EmployeeDto> {
-        const response = await axiosInstance.post<EmployeeDto>(`/employee`, form);
+    async createNew(form: CreateNewEmployeeForm): Promise<EmployeeDto> {
+        const response = await axiosInstance.post<EmployeeDto>(`/employee/create-new`, form);
+        return response.data;
+    }
+
+    async addExisting(form: AddExistingEmployeeForm): Promise<EmployeeDto> {
+        const response = await axiosInstance.post<EmployeeDto>(`/employee/add-existing`, form);
         return response.data;
     }
 
@@ -30,5 +36,8 @@ export class EmployeeApiAxios implements EmployeeApi {
         const response = await axiosInstance.get<EmployeeDto[]>(`/employee/workshop/${workshopId}`);
         return response.data;
     }
-
+    async get(id: string): Promise<EmployeeDto> {
+        const response = await axiosInstance.get<EmployeeDto>(`/employee/${id}`);
+        return response.data;
+    }
 }

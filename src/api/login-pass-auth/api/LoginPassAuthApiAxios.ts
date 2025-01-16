@@ -11,26 +11,20 @@ export class LoginPassAuthApiAxios implements LoginPassAuthApi {
         const response = await axiosInstance.post<LoginResponseDto>('/auth/login', form);
         return response.data;
     }
+
     async register(form: CreateUserWithPasswordForm): Promise<void> {
-        try {
-            await axiosInstance.post('/auth/register', form);
-        } catch (error) {
-            return console.error(error);
-        }
+        await axiosInstance.post('/auth/register', form);
     }
+
     async resetPasswordRequest(form: ResetPasswordForm): Promise<void> {
         await axiosInstance.post('/auth/reset-password-request', form);
-
     }
+
     async resetPassword(form: ResetPasswordConfirmForm): Promise<void> {
         await axiosInstance.put('/auth/reset-password', form);
     }
 
     async logout(): Promise<void> {
-        try {
-            await axiosInstance.post('/auth/logout');
-        } catch (error) {
-            return console.error(error);
-        }
-    };
+        await axiosInstance.post('/auth/logout');
+    }
 }

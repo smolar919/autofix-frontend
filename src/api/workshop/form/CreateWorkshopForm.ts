@@ -5,4 +5,9 @@ export interface CreateWorkshopForm {
     postalCode: string;
     voivodeship: string;
     country: string;
+    ownerId: string;
+    ownerPhoneNumber: string;
+    description: string;
+    openingHours: string;
+    serviceIds: string[];
 }

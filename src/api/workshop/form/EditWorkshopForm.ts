@@ -5,4 +5,7 @@ export interface EditWorkshopForm {
     postalCode: string;
     voivodeship: string;
     country: string;
+    description: string;
+    openingHours: string;
+    serviceIds: string[];
 }

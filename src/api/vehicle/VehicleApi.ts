@@ -7,4 +7,5 @@ export interface VehicleApi {
     update(form: EditVehicleForm, id: string): Promise<VehicleDto>;
     delete(id: string): Promise<void>;
     getByOwnerId(userId: string): Promise<VehicleDto[]>;
+    getById(id: string): Promise<VehicleDto>;
 }

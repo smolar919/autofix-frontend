@@ -5,17 +5,21 @@ export interface BookingDto {
     vehicleId: string;
     serviceIds: string[];
     employeeId: string;
-    bookingDate: Date;
-    bookingStatus: BookingStatus;
+    timeSlotId: string;
+    submissionDate: Date | null;
+    completionDate: Date | null;
+    status: BookingStatus;
+    faultDescription: string;
+    workDescription: string | null;
 }
 
 export enum BookingStatus {
-    PENDING = 'PENDING',
-    CONFIRMED = 'CONFIRMED',
-    CANCELED = 'CANCELED',
-    COMPLETED = 'COMPLETED',
-    REJECTED = 'REJECTED',
-    EXPIRED = 'EXPIRED',
-    IN_PROGRESS = 'IN_PROGRESS',
-    FAILED = 'FAILED',
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    CANCELED = "CANCELLED",
+    COMPLETED = "COMPLETED",
+    REJECTED = "REJECTED",
+    EXPIRED = "EXPIRED",
+    IN_PROGRESS = "IN_PROGRESS",
+    FAILED = "FAILED",
 }
