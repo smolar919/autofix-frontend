@@ -7,4 +7,5 @@ export interface ServiceApi {
     edit(form: EditServiceForm, id: string): Promise<ServiceDto>;
     delete(id: string): Promise<void>;
     listServicesByWorkshopId(workshopId: string): Promise<ServiceDto[]>;
+    get(id: string): Promise<ServiceDto>;
 }

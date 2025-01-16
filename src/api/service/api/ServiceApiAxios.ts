@@ -15,12 +15,17 @@ export class ServiceApiAxios implements ServiceApi {
     }
 
     async listServicesByWorkshopId(workshopId: string): Promise<ServiceDto[]> {
-        const response = await axiosInstance.get<ServiceDto[]>(`/workshops/${workshopId}/services`);
+        const response = await axiosInstance.get<ServiceDto[]>(`/services/workshop/${workshopId}`);
         return response.data;
     }
 
     async save(form: CreateServiceForm): Promise<ServiceDto> {
         const response = await axiosInstance.post<ServiceDto>(`/services`, form);
+        return response.data;
+    }
+
+    async get(id: string) {
+        const response = await axiosInstance.get<ServiceDto>(`/services/${id}`);
         return response.data;
     }
 }

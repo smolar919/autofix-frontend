@@ -4,8 +4,14 @@ export interface UserDto {
     lastName: string;
     email: string;
     createdOn: Date;
-    createdById: string;
     deletedOn: Date | null;
     deletedById: string | null;
     blocked: boolean;
+    role: Role;
+}
+
+export enum Role {
+    CUSTOMER,
+    ADMIN,
+    PROVIDER
 }

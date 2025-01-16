@@ -25,4 +25,9 @@ export class WorkshopApiAxios implements WorkshopApi {
     async delete(id: string): Promise<void> {
         await axiosInstance.delete<void>(`/workshop/${id}`);
     }
+
+    async get(id: string): Promise<WorkshopDto> {
+        const response = await axiosInstance.get<WorkshopDto>(`/workshop/${id}`);
+        return response.data;
+    }
 }

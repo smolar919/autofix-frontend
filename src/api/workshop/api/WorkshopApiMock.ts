@@ -1,16 +1,17 @@
-import {WorkshopApi} from "../WorkshopApi.ts";
-import {WorkshopDto} from "../response/WorkshopDto.ts";
-import {SearchForm} from "../../../commons/search/SearchForm.ts";
-import {SearchResponse} from "../../../commons/search/SearchResponse.ts";
-import {CriteriaOperator} from "../../../commons/search/CriteriaOperator.ts";
-import {CreateWorkshopForm} from "../form/CreateWorkshopForm.ts";
-import {EditWorkshopForm} from "../form/EditWorkshopForm.ts";
+import { WorkshopApi } from "../WorkshopApi";
+import { WorkshopDto } from "../response/WorkshopDto";
+import { SearchForm } from "../../../commons/search/SearchForm";
+import { SearchResponse } from "../../../commons/search/SearchResponse";
+import { CriteriaOperator } from "../../../commons/search/CriteriaOperator";
+import { CreateWorkshopForm } from "../form/CreateWorkshopForm";
+import { EditWorkshopForm } from "../form/EditWorkshopForm";
 import { v4 as uuidv4 } from 'uuid';
 
 export class WorkshopApiMock implements WorkshopApi {
     private workshops: WorkshopDto[] = [
         {
             id: "mock-workshop-1",
+            ownerId: "owner-1",
             name: "AutoFix Center",
             address: {
                 id: "address-1",
@@ -29,8 +30,13 @@ export class WorkshopApiMock implements WorkshopApi {
                     phoneNumber: "123-456-7890",
                     email: "john.doe@example.com",
                     workshopId: "mock-workshop-1",
+                    userId: "user-1"
                 },
             ],
+            isVisible: true,
+            description: "Profesjonalny warsztat z wieloletnim doświadczeniem.",
+            serviceIds: ["service-1", "service-2"],
+            openingHours: "Pon-Pt: 8:00-18:00; Sob: 9:00-13:00"
         },
     ];
 
@@ -64,6 +70,7 @@ export class WorkshopApiMock implements WorkshopApi {
     async create(form: CreateWorkshopForm): Promise<WorkshopDto> {
         const newWorkshop: WorkshopDto = {
             id: uuidv4(),
+            ownerId: form.ownerId,
             name: form.name,
             address: {
                 id: uuidv4(),
@@ -74,6 +81,10 @@ export class WorkshopApiMock implements WorkshopApi {
                 country: form.country,
             },
             employees: [],
+            isVisible: true,
+            description: form.description,
+            serviceIds: [], // Jeśli pole nie jest obsługiwane, zostaje puste
+            openingHours: form.openingHours
         };
         this.workshops.push(newWorkshop);
         return newWorkshop;
@@ -90,10 +101,20 @@ export class WorkshopApiMock implements WorkshopApi {
         workshop.address.postalCode = form.postalCode;
         workshop.address.voivodeship = form.voivodeship;
         workshop.address.country = form.country;
+        workshop.description = form.description;
+        workshop.openingHours = form.openingHours;
         return workshop;
     }
 
     async delete(id: string): Promise<void> {
         this.workshops = this.workshops.filter(w => w.id !== id);
+    }
+
+    async get(id: string): Promise<WorkshopDto> {
+        const workshop = this.workshops.find(w => w.id === id);
+        if (!workshop) {
+            throw new Error("Workshop not found");
+        }
+        return workshop;
     }
 }

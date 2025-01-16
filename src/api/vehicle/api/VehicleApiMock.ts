@@ -5,6 +5,9 @@ import {CreateVehicleForm} from "../form/CreateVehicleForm.ts";
 import {EditVehicleForm} from "../form/EditVehicleForm.ts";
 
 export class VehicleApiMock implements VehicleApi {
+    getById(id: string): Promise<VehicleDto> {
+        throw new Error('Method not implemented.' + id);
+    }
     private vehicles: VehicleDto[] = [
         {
             id: "mock-vehicle-1",

@@ -1,8 +1,11 @@
-import {BookingApi} from "../BookingApi.ts";
-import {BookingDto, BookingStatus} from "../response/BookingDto.ts";
-import {CreateBookingForm} from "../form/CreateBookingForm.ts";
-import {EditBookingForm} from "../form/EditBookingForm.ts";
+import { BookingApi } from "../BookingApi.ts";
+import { BookingDto, BookingStatus } from "../response/BookingDto.ts";
+import { CreateBookingForm } from "../form/CreateBookingForm.ts";
+import { EditBookingForm } from "../form/EditBookingForm.ts";
 import { v4 as uuidv4 } from 'uuid';
+import {SearchForm} from "../../../commons/search/SearchForm.ts";
+import {SearchResponse} from "../../../commons/search/SearchResponse.ts";
+import {CriteriaOperator} from "../../../commons/search/CriteriaOperator.ts";
 
 export class BookingApiMock implements BookingApi {
     private bookings: BookingDto[] = [
@@ -13,8 +16,12 @@ export class BookingApiMock implements BookingApi {
             vehicleId: "vehicle-789",
             serviceIds: ["service-1", "service-2"],
             employeeId: "employee-101",
-            bookingDate: new Date("2025-01-01T10:00:00Z"),
-            bookingStatus: BookingStatus.PENDING,
+            timeSlotId: "slot-001",
+            submissionDate: new Date("2025-01-01T10:00:00Z"),
+            completionDate: null,
+            status: BookingStatus.PENDING,
+            faultDescription: "Brake issue",
+            workDescription: null,
         },
         {
             id: "mock-booking-2",
@@ -23,8 +30,12 @@ export class BookingApiMock implements BookingApi {
             vehicleId: "vehicle-456",
             serviceIds: ["service-3"],
             employeeId: "employee-102",
-            bookingDate: new Date("2025-01-02T14:00:00Z"),
-            bookingStatus: BookingStatus.CONFIRMED,
+            timeSlotId: "slot-002",
+            submissionDate: new Date("2025-01-02T14:00:00Z"),
+            completionDate: null,
+            status: BookingStatus.CONFIRMED,
+            faultDescription: "Oil change",
+            workDescription: null,
         },
     ];
 
@@ -36,8 +47,12 @@ export class BookingApiMock implements BookingApi {
             vehicleId: form.vehicleId,
             serviceIds: form.serviceIds,
             employeeId: form.employeeId,
-            bookingDate: form.bookingDate,
-            bookingStatus: BookingStatus.PENDING,
+            timeSlotId: form.timeSlotId,
+            submissionDate: new Date(),
+            completionDate: null,
+            status: BookingStatus.PENDING,
+            faultDescription: form.faultDescription,
+            workDescription: null,
         };
         this.bookings.push(newBooking);
         return newBooking;
@@ -48,7 +63,9 @@ export class BookingApiMock implements BookingApi {
         if (!booking) {
             throw new Error("Booking not found");
         }
-        booking.bookingDate = form.newDate;
+        if (form.newDate) booking.submissionDate = form.newDate;
+        if (form.workDescription) booking.workDescription = form.workDescription;
+        if (form.status) booking.status = form.status;
         return booking;
     }
 
@@ -57,7 +74,7 @@ export class BookingApiMock implements BookingApi {
         if (!booking) {
             throw new Error("Booking not found");
         }
-        booking.bookingStatus = BookingStatus.CANCELED;
+        booking.status = BookingStatus.CANCELED;
     }
 
     async get(id: string): Promise<BookingDto> {
@@ -82,5 +99,67 @@ export class BookingApiMock implements BookingApi {
 
     async getByEmployeeId(employeeId: string): Promise<BookingDto[]> {
         return this.bookings.filter(b => b.employeeId === employeeId);
+    }
+
+    async updateBookingStatus(id: string, newStatus: BookingStatus): Promise<void> {
+        const booking = this.bookings.find(b => b.id === id);
+        if (!booking) {
+            throw new Error("Booking not found");
+        }
+        booking.status = newStatus;
+        if (newStatus === BookingStatus.COMPLETED) {
+            booking.completionDate = new Date();
+        }
+    }
+
+    async search(form: SearchForm): Promise<SearchResponse<BookingDto>> {
+        let filteredBookings = [...this.bookings];
+
+        form.criteria.forEach((criterion) => {
+            const { fieldName, value, operator } = criterion;
+
+            filteredBookings = filteredBookings.filter((booking) => {
+                const bookingValue = (booking as any)[fieldName];
+
+                switch (operator) {
+                    case CriteriaOperator.EQUALS:
+                        return bookingValue === value;
+                    case CriteriaOperator.NOT_EQUALS:
+                        return bookingValue !== value;
+                    case CriteriaOperator.GR:
+                        return bookingValue > value;
+                    case CriteriaOperator.GRE:
+                        return bookingValue >= value;
+                    case CriteriaOperator.LS:
+                        return bookingValue < value;
+                    case CriteriaOperator.LSE:
+                        return bookingValue <= value;
+                    case CriteriaOperator.LIKE:
+                        return typeof bookingValue === "string" && bookingValue.includes(value);
+                    default:
+                        return false;
+                }
+            });
+        });
+
+        filteredBookings.sort((a, b) => {
+            const aValue = (a as any)[form.sort.by];
+            const bValue = (b as any)[form.sort.by];
+
+            if (form.sort.order === "ASC") {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        const start = form.page * form.size;
+        const end = start + form.size;
+        const paginatedBookings = filteredBookings.slice(start, end);
+
+        return {
+            items: paginatedBookings,
+            total: filteredBookings.length,
+        };
     }
 }

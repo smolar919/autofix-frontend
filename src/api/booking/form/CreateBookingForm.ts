@@ -4,5 +4,6 @@ export interface CreateBookingForm {
     vehicleId: string;
     serviceIds: string[];
     employeeId: string;
-    bookingDate: Date;
+    timeSlotId: string;
+    faultDescription: string;
 }

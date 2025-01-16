@@ -1,5 +1,6 @@
 export interface EmployeeDto {
     id: string;
+    userId: string;
     firstName: string;
     lastName: string;
     position: string;
