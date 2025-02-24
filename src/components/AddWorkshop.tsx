@@ -89,7 +89,8 @@ const AddWorkshop: React.FC = () => {
 
         try {
             const workshopApi = new WorkshopApiAxios();
-            await workshopApi.create(form);
+            const createdWorkshop = await workshopApi.create(form);
+            navigate(`/workshop-management/${createdWorkshop.id}`);
             setSuccess("Warsztat został pomyślnie dodany!");
         } catch (err: any) {
             setError("Wystąpił błąd podczas dodawania warsztatu.");
